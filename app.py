@@ -1,23 +1,11 @@
-from fastapi import FastAPI, Query
+from flask import Flask, request, jsonify
 import yfinance as yf
 
-app = FastAPI()
+app = Flask(__name__)
 
-@app.get("/")
-def read_root():
-    return {"message": "欢迎使用 yfinance API！"}
-
-@app.get("/stock")
-def get_stock_data(ticker: str = Query(..., description="股票代号，比如 AAPL")):
-    try:
-        stock = yf.Ticker(ticker)
-        return {
-            "symbol": stock.info.get("symbol"),
-            "longName": stock.info.get("longName"),
-            "price": stock.info.get("currentPrice"),
-            "currency": stock.info.get("currency"),
-            "marketCap": stock.info.get("marketCap"),
-            "sector": stock.info.get("sector")
-        }
-    except Exception as e:
-        return {"error": str(e)}
+@app.route('/stock')
+def get_stock():
+    symbol = request.args.get('symbol', 'AAPL')
+    ticker = yf.Ticker(symbol)
+    data = ticker.history(period='1d')
+    return jsonify(data.to_dict())
