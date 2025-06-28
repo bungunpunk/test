@@ -25,3 +25,4 @@ def get_stock():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 
+CORS(app, resources={r"/stock": {"origins": "https://www.bunguner.com"}})
